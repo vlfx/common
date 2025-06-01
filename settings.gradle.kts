@@ -3,3 +3,4 @@ plugins {
 }
 rootProject.name = "common"
 
+include("common-utils")
