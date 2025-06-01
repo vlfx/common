@@ -4,3 +4,4 @@ plugins {
 rootProject.name = "common"
 
 include("common-utils")
+include("common-spring")
