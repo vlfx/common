@@ -54,6 +54,7 @@ val JSON = ObjectMapper().apply {
 //DIY
 @DiyExtend
 fun <T> T.toJsonString(): String {
+
     return JSON.writeValueAsString(this)
 }
 
