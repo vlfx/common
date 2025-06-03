@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":common-utils"))
+    implementation(project(":vlfx-common-utils"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
 }
