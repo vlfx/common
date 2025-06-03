@@ -8,12 +8,14 @@ rootProject.name = "common"
 //include("common-utils")
 //include("common-spring")
 
-include("vlfx-common-utils")
-include("vlfx-common-spring")
+//include("vlfx-common-utils")
+//include("vlfx-common-spring")
 
-
-//file(rootDir).listFiles(FileFilter { it.isDirectory && it.name.startsWith("common")}).forEach {
-////    include(it.name)
-//    println(">>>>>>>> ${it.name}")
-//}
-
+// 自动添加子模块,1层
+rootDir.listFiles(FileFilter {
+    it.isDirectory && !it.isHidden && it.name != "buildSrc"
+            && File(it, "build.gradle.kts").exists()
+})?.forEach {
+//    println("!>>>>>> " + it.name)
+    include(it.name)
+}
