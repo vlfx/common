@@ -28,9 +28,9 @@ kotlin {
     jvmToolchain(17)
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+//tasks.withType<Test> {
+//    useJUnitPlatform()
+//}
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
