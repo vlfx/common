@@ -1,5 +1,6 @@
-package com.vlfx.com.vlfx.common
+package io.github.vlfx.common
 
+import io.github.vlfx.common.annotation.GlobalMarker
 import java.lang.reflect.Field
 import java.util.*
 import java.util.regex.Pattern
@@ -9,6 +10,7 @@ import java.util.regex.Pattern
  * @date 2025/5/29 12:24
  */
 @Suppress("unused")
+@GlobalMarker
 object Utils {
 
 

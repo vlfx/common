@@ -1,14 +1,14 @@
-package com.vlfx.common
+package io.github.vlfx.common
 
-import com.vlfx.com.vlfx.common.*
-import org.junit.Test
+
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
  * @author vLfx
  * @date 2025/5/29 12:53
  */
-class ArraysExtendUtilsKtTest {
+class IterableExtendKtTest {
 
     @Test
     fun nullOrAllFalse() {
@@ -35,25 +35,25 @@ class ArraysExtendUtilsKtTest {
 
         val tree = list.toTree({ it.first }, { it.second }, 0)
         val ro = mutableListOf(
-            RecursionObject(
+            Node(
                 1 to 0,
                 1,
                 0,
                 mutableListOf(
-                    RecursionObject(
+                    Node(
                         2 to 1,
                         2,
                         1,
-                        mutableListOf(RecursionObject(4 to 2, 4, 2, mutableListOf()))
+                        mutableListOf(Node(4 to 2, 4, 2, mutableListOf()))
                     ),
-                    RecursionObject(
+                    Node(
                         5 to 1,
                         5,
                         1,
                     ),
                 )
             ),
-            RecursionObject(
+            Node(
                 3 to 0,
                 3,
                 0,

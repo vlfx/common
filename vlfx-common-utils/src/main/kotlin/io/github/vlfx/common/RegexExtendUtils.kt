@@ -1,8 +1,8 @@
 @file:Suppress("unused")
 
-package com.vlfx.common
+package io.github.vlfx.common
 
-import com.vlfx.common.annotation.DiyExtend
+import io.github.vlfx.common.annotation.CustomExtend
 
 /**
  * 正则表达式扩展方法
@@ -19,7 +19,7 @@ import com.vlfx.common.annotation.DiyExtend
  * @param default 匹配失败返回的默认值
  * @return 匹配到的值
  */
-@DiyExtend
+@CustomExtend
 fun String.findMatch(regexStr: String, group: Int = 0, startIndex: Int = 0, default: String? = null):String? {
     val regex = Regex(regexStr)
     val matchResult = regex.find(this, startIndex)

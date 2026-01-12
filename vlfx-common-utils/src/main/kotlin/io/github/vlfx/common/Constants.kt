@@ -1,5 +1,6 @@
-package com.vlfx.com.vlfx.common
+package io.github.vlfx.common
 
+import io.github.vlfx.common.annotation.GlobalMarker
 import java.time.format.DateTimeFormatter
 
 /**
@@ -7,6 +8,7 @@ import java.time.format.DateTimeFormatter
  * @date 2025/5/29 11:53
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
+@GlobalMarker
 object Constants {
 
     const val DATE_FORMAT_DEFAULT_STR = "yyyy-MM-dd HH:mm:ss"

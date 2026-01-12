@@ -3,8 +3,8 @@ plugins {
     `maven-publish`
 }
 
-group = "com.vlfx"
-version = "1.0-SNAPSHOT"
+group = "io.github.vlfx"
+version = "0.1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -25,7 +25,7 @@ dependencies {
 //    useJUnitPlatform()
 //}
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 //tasks.withType<Test> {
