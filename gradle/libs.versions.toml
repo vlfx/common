@@ -2,18 +2,21 @@
 kotlin = "2.3.0"
 springboot = "3.5.9"
 spring-dependency-management = "1.1.7"
-
-
+dokka = "2.1.0"
+maven-publish = "0.35.0"
 
 [libraries]
-jvm = { group = "org.jetbrains.kotlin.jvm", name = "org.jetbrains.kotlin.jvm.gradle.plugin", version.ref = "kotlin" }
-kotlin-spring = { group = "org.jetbrains.kotlin.plugin.spring", name = "org.jetbrains.kotlin.plugin.spring.gradle.plugin", version.ref = "kotlin" }
-springboot = { group = "org.springframework.boot", name = "spring-boot-gradle-plugin", version.ref = "springboot" }
-spring-dependency-management = { group = "io.spring.gradle", name = "dependency-management-plugin", version.ref = "spring-dependency-management" }
 
+
+
+# gradlePlugin(buildSrc use)
+#kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-jvm-gradlePlugin = { module = "org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin", version.ref = "kotlin" }
+kotlin-spring-gradlePlugin = {module="org.jetbrains.kotlin.plugin.spring:org.jetbrains.kotlin.plugin.spring.gradle.plugin", version.ref="kotlin"}
+#kotlin-jpa-gradlePlugin = {module="org.jetbrains.kotlin.plugin.jpa:org.jetbrains.kotlin.plugin.jpa.gradle.plugin", version.ref="kotlin"}
+dokka-gradlePlugin = {module="org.jetbrains.dokka:dokka-gradle-plugin", version.ref="dokka"}
+springboot-gradlePlugin = {module="org.springframework.boot:spring-boot-gradle-plugin", version.ref="springboot"}
+spring-dependency-management-gradlePlugin = {module="io.spring.gradle:dependency-management-plugin", version.ref="spring-dependency-management"}
+maven-publish-gradlePlugin = { group = "com.vanniktech", name = "gradle-maven-publish-plugin", version.ref = "maven-publish" }
 
 [plugins]
-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
-springboot = { id = "org.springframework.boot", version.ref = "springboot" }
-spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }

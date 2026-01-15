@@ -1,10 +1,7 @@
 plugins {
     `kotlin-dsl`
-    `maven-publish`
+//    `maven-publish`
 }
-
-group = "io.github.vlfx"
-version = "0.1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -13,11 +10,13 @@ repositories {
 
 dependencies {
     gradleApi()
-    implementation(libs.jvm)
-    implementation(libs.kotlin.spring)
-    implementation(libs.springboot)
-    implementation(libs.spring.dependency.management)
+    implementation(libs.kotlin.jvm.gradlePlugin)
+    implementation(libs.kotlin.spring.gradlePlugin)
+    implementation(libs.springboot.gradlePlugin)
+    implementation(libs.spring.dependency.management.gradlePlugin)
 
+    implementation(libs.dokka.gradlePlugin)
+    implementation(libs.maven.publish.gradlePlugin)
 
 }
 
@@ -39,8 +38,8 @@ tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }
 
-publishing {
-    repositories {
-        mavenLocal()
-    }
-}
+//publishing {
+//    repositories {
+//        mavenLocal()
+//    }
+//}
