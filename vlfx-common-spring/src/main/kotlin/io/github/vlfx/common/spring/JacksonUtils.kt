@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
-import io.github.vlfx.common.annotation.CustomExtend
-import io.github.vlfx.common.annotation.GlobalMarker
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -18,7 +16,6 @@ import java.time.format.DateTimeFormatter
  * @author vLfx
  * @date 2025/9/28 11:59
  */
-@GlobalMarker
 object JacksonUtils {
 
     val JSON = ObjectMapper().apply {
@@ -45,7 +42,6 @@ object JacksonUtils {
     /**
      * 对象转json字符串
      */
-    @CustomExtend
     fun <T> T.toJsonString(): String {
         return JSON.writeValueAsString(this)
     }
@@ -54,7 +50,6 @@ object JacksonUtils {
      * 对象转json字符串
      * 忽略值为null的字段
      */
-    @CustomExtend
     fun <T> T.toJsonStringNonNull(): String {
         return JSON.copy().setSerializationInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(this)
     }
@@ -63,7 +58,6 @@ object JacksonUtils {
      * 对象转json字符串
      * 以漂亮的格式输出
      */
-    @CustomExtend
     fun <T> T.toJsonStringPretty(): String {
         return JSON.writerWithDefaultPrettyPrinter().writeValueAsString(this)
     }
@@ -73,7 +67,6 @@ object JacksonUtils {
      * 忽略值为null的字段
      * 以漂亮的格式输出
      */
-    @CustomExtend
     fun <T> T.toJsonStringNonNullPretty(): String {
         return JSON.copy().setSerializationInclusion(JsonInclude.Include.NON_NULL).writerWithDefaultPrettyPrinter()
             .writeValueAsString(this)
@@ -87,7 +80,6 @@ object JacksonUtils {
      *         val objC: Data = str.jsonStringToObj()
      *         val objD: Data = JacksonUtils.fromJsonString(str)
      */
-    @CustomExtend
     inline fun <reified T> fromJsonString(json: String): T {
         return JSON.readValue(json, T::class.java)
     }
@@ -96,7 +88,6 @@ object JacksonUtils {
      * 同fromJsonString(json: String)
      * @see fromJsonString
      */
-    @CustomExtend
     inline fun <reified T> String.jsonStringToObj(): T {
         return JSON.readValue(this, T::class.java)
     }

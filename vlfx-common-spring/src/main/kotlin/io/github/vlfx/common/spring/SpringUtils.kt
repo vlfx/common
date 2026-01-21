@@ -1,8 +1,6 @@
 @file:Suppress("unused")
 package io.github.vlfx.common.spring
 
-import io.github.vlfx.common.annotation.CustomExtend
-import io.github.vlfx.common.annotation.GlobalMarker
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationEvent
@@ -23,7 +21,6 @@ import org.springframework.context.ApplicationEvent
  * @author vLfx
  * @date 2025/9/11 10:57
  */
-@GlobalMarker
 lateinit var springUtils: SpringUtils // 全局属性，此实例的类委托于ApplicationContext，可以使用ApplicationContext的所有方法
 
 // 不需要在其他地方实例化
@@ -43,7 +40,6 @@ class SpringUtils private constructor(val applicationContext: ApplicationContext
     /**
      * 按类型判断spring上下文中是否有实例
      */
-    @CustomExtend
     inline fun <reified T> containsBeanOfType(
         includeNonSingletons: Boolean = true,
         allowEagerInit: Boolean = true
