@@ -18,13 +18,18 @@ data class RequestMetadata(
     val headersConsumer: (HttpHeaders) -> Unit = {},
 )
 
-inline fun <reified T> RequestMetadata.sync(restClient: RestClient, params: Map<String, Any?> = emptyMap()): T? {
+inline fun <reified T> RequestMetadata.sync(
+    restClient: RestClient,
+    params: Map<String, Any?> = emptyMap(),
+    body: Any? = null
+): T? {
+    val bodyContent = body ?: this.body
     return restClient
         .method(method) // method
         .uri(uri, this.params + params) // uri & params
         .headers(headersConsumer).apply { // headers
-            if (body != null) {
-                body(body) // body
+            if (bodyContent != null) {
+                body(bodyContent) // body
             }
         }.retrieve().body()
 }
@@ -32,31 +37,33 @@ inline fun <reified T> RequestMetadata.sync(restClient: RestClient, params: Map<
 inline fun <reified T, R> RequestMetadata.sync(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
+    body: Any? = null,
     resultTransform: (T?) -> R
 ): R {
-    return resultTransform(sync(restClient, params))
+    return resultTransform(sync(restClient, params, body))
 }
 
 inline fun <reified T, R> RequestMetadata.sync(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
-//    resultTransform: (T?) -> R
-    resultTransform: ResultTransform<T?,R>
+    body: Any? = null,
+    resultTransform: ResultTransform<T?, R>
 ): R {
-//    return resultTransform(sync(restClient, params))
-    return resultTransform.transform(sync(restClient, params))
+    return resultTransform.transform(sync(restClient, params, body))
 }
 
 inline fun <reified T> RequestMetadata.async(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
+    body: Any? = null,
     exchangeFunction: RestClient.RequestHeadersSpec.ExchangeFunction<T>
 ) {
+    val bodyContent = body ?: this.body
     restClient.method(method)
         .uri(uri, this.params + params)
         .headers(headersConsumer).apply {
-            if (body != null) {
-                body(body)
+            if (bodyContent != null) {
+                body(bodyContent)
             }
         }.exchange<T>(exchangeFunction)
 }
