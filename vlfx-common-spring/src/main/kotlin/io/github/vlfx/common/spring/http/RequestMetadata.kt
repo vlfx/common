@@ -37,6 +37,16 @@ inline fun <reified T, R> RequestMetadata.sync(
     return resultTransform(sync(restClient, params))
 }
 
+inline fun <reified T, R> RequestMetadata.sync(
+    restClient: RestClient,
+    params: Map<String, Any?> = emptyMap(),
+//    resultTransform: (T?) -> R
+    resultTransform: ResultTransform<T?,R>
+): R {
+//    return resultTransform(sync(restClient, params))
+    return resultTransform.transform(sync(restClient, params))
+}
+
 inline fun <reified T> RequestMetadata.async(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
