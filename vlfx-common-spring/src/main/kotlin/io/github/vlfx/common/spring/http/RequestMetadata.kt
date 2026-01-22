@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package io.github.vlfx.common.spring.http
 
 import org.springframework.http.HttpHeaders
@@ -17,6 +19,23 @@ data class RequestMetadata(
     val body: Any? = null,
     val headersConsumer: (HttpHeaders) -> Unit = {},
 )
+
+fun <T> RequestMetadata.sync(
+    resultBodyType: Class<T>,
+    restClient: RestClient,
+    params: Map<String, Any?> = emptyMap(),
+    body: Any? = null
+): T? {
+    val bodyContent = body ?: this.body
+    return restClient
+        .method(method) // method
+        .uri(uri, this.params + params) // uri & params
+        .headers(headersConsumer).apply { // headers
+            if (bodyContent != null) {
+                body(bodyContent) // body
+            }
+        }.retrieve().body(resultBodyType)
+}
 
 inline fun <reified T> RequestMetadata.sync(
     restClient: RestClient,
@@ -47,7 +66,7 @@ inline fun <reified T, R> RequestMetadata.sync(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
     body: Any? = null,
-    resultTransform: ResultTransform<T?, R>
+    resultTransform: ResultTransform<T, R>
 ): R {
     return resultTransform.transform(sync(restClient, params, body))
 }
