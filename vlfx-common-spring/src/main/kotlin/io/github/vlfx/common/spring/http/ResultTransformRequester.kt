@@ -8,7 +8,7 @@ import kotlin.reflect.jvm.javaType
  * @author vLfx
  * @date 2026/1/22 12:31
  */
-class ResultTransformRequester<T, R>(
+open class ResultTransformRequester<T, R>(
     private val requestMetadata: RequestMetadata,
     private val restClient: RestClient,
     private val resultTransform: ResultTransform<T, R>,
