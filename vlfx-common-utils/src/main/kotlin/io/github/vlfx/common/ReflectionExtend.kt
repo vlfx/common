@@ -1,10 +1,12 @@
 @file:Suppress("unused")
+
 package io.github.vlfx.common
 
 import io.github.vlfx.common.annotation.CustomExtend
 import kotlin.collections.get
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
+import kotlin.reflect.KVisibility
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 
@@ -82,5 +84,25 @@ inline fun <reified T> Any.reflectionProperty(propertyName: String): T? {
     return ps[propertyName]?.getter?.let {
         it.isAccessible = true
         return@let it.call(this) as T
+    }
+}
+
+/**
+ * 将对象的属性转换成 <属性名,值> 的 map
+ * @param accessPrivate 是否也获取私有属性 (目前是 非PUBLIC)
+ */
+@CustomExtend
+fun Any.reflectionPropertiesMap(accessPrivate: Boolean = false): Map<String, Any?> {
+    return this::class.memberProperties.filter {
+        if (accessPrivate) {
+            true
+        } else {
+            it.getter.visibility == KVisibility.PUBLIC
+        }
+    }.associate {
+        if (accessPrivate && it.getter.visibility != KVisibility.PUBLIC) {
+            it.getter.isAccessible = true
+        }
+        it.name to it.getter.call(this)
     }
 }
