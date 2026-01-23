@@ -2,6 +2,7 @@
 
 package io.github.vlfx.common.spring.http
 
+import io.github.vlfx.common.reflectionPropertiesMap
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.web.client.RestClient
@@ -18,7 +19,15 @@ data class RequestMetadata(
     val params: Map<String, Any?> = emptyMap(),
     val body: Any? = null,
     val headersConsumer: (HttpHeaders) -> Unit = {},
-)
+) {
+    constructor(
+        uri: String,
+        method: HttpMethod = HttpMethod.GET,
+        params: Any,
+        body: Any? = null,
+        headersConsumer: (HttpHeaders) -> Unit = {}
+    ) : this(uri, method, params.reflectionPropertiesMap(), body, headersConsumer)
+}
 
 fun <T> RequestMetadata.sync(
     resultBodyType: Class<T>,
@@ -37,6 +46,13 @@ fun <T> RequestMetadata.sync(
         }.retrieve().body(resultBodyType)
 }
 
+fun <T> RequestMetadata.sync(
+    resultBodyType: Class<T>,
+    restClient: RestClient,
+    params: Any,
+    body: Any? = null
+): T? = sync(resultBodyType, restClient, params.reflectionPropertiesMap(), body)
+
 inline fun <reified T> RequestMetadata.sync(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
@@ -53,6 +69,12 @@ inline fun <reified T> RequestMetadata.sync(
         }.retrieve().body()
 }
 
+inline fun <reified T> RequestMetadata.sync(
+    restClient: RestClient,
+    params: Any,
+    body: Any? = null
+): T? = sync(restClient, params.reflectionPropertiesMap(), body)
+
 inline fun <reified T, R> RequestMetadata.sync(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
@@ -64,12 +86,28 @@ inline fun <reified T, R> RequestMetadata.sync(
 
 inline fun <reified T, R> RequestMetadata.sync(
     restClient: RestClient,
+    params: Any,
+    body: Any? = null,
+    resultTransform: (T?) -> R
+): R = sync(restClient, params.reflectionPropertiesMap(), body, resultTransform)
+
+inline fun <reified T, R> RequestMetadata.sync(
+    restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
     body: Any? = null,
     resultTransform: ResultTransform<T, R>
 ): R {
     return resultTransform.transform(sync(restClient, params, body))
 }
+
+inline fun <reified T, R> RequestMetadata.sync(
+    restClient: RestClient,
+    params: Any,
+    body: Any? = null,
+    resultTransform: ResultTransform<T, R>
+): R = sync(restClient, params.reflectionPropertiesMap(), body, resultTransform)
+
+/******* async *******/
 
 inline fun <reified T> RequestMetadata.async(
     restClient: RestClient,
@@ -86,3 +124,10 @@ inline fun <reified T> RequestMetadata.async(
             }
         }.exchange<T>(exchangeFunction)
 }
+
+inline fun <reified T> RequestMetadata.async(
+    restClient: RestClient,
+    params: Any,
+    body: Any? = null,
+    exchangeFunction: RestClient.RequestHeadersSpec.ExchangeFunction<T>
+) = async(restClient, params.reflectionPropertiesMap(), body, exchangeFunction)

@@ -1,5 +1,6 @@
 package io.github.vlfx.common.spring.http
 
+import io.github.vlfx.common.reflectionPropertiesMap
 import org.springframework.web.client.RestClient
 import kotlin.reflect.jvm.javaType
 
@@ -28,7 +29,7 @@ open class ResultTransformRequester<T, R>(
 //        return resultTransform.transform(resultBody)
 //    }
 
-// plan 3
+    // plan 3
     fun sync(params: Map<String, Any?> = emptyMap(), body: Any? = null): R {
         @Suppress("UNCHECKED_CAST") val resultBodyClass: Class<T> =
             resultTransform.javaClass.kotlin.supertypes[0].arguments[0].type!!.javaType as Class<T>
@@ -36,5 +37,8 @@ open class ResultTransformRequester<T, R>(
         val resultBody = requestMetadata.sync(resultBodyClass, restClient, params, body)
         return resultTransform.transform(resultBody)
     }
+
+    fun sync(params: Any, body: Any? = null): R = sync(params.reflectionPropertiesMap(), body)
+
 
 }
