@@ -5,6 +5,7 @@ package io.github.vlfx.common.spring.http
 import io.github.vlfx.common.reflectionPropertiesMap
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpRequest
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 
@@ -107,9 +108,9 @@ inline fun <reified T, R> RequestMetadata.sync(
     resultTransform: ResultTransform<T, R>
 ): R = sync(restClient, params.reflectionPropertiesMap(), body, resultTransform)
 
-/******* async *******/
+/******* exchange *******/
 
-inline fun <reified T> RequestMetadata.async(
+inline fun <reified T> RequestMetadata.exchange(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
     body: Any? = null,
@@ -125,9 +126,18 @@ inline fun <reified T> RequestMetadata.async(
         }.exchange<T>(exchangeFunction)
 }
 
-inline fun <reified T> RequestMetadata.async(
+inline fun <reified T> RequestMetadata.exchange(
     restClient: RestClient,
     params: Any,
     body: Any? = null,
     exchangeFunction: RestClient.RequestHeadersSpec.ExchangeFunction<T>
-) = async(restClient, params.reflectionPropertiesMap(), body, exchangeFunction)
+) = exchange(restClient, params.reflectionPropertiesMap(), body, exchangeFunction)
+
+inline fun <reified T> RequestMetadata.exchange(
+    restClient: RestClient,
+    params: Any,
+    body: Any? = null,
+    crossinline exchangeLambda: (req: HttpRequest, resp: RestClient.RequestHeadersSpec.ConvertibleClientHttpResponse) -> T
+) = exchange(
+    restClient, params.reflectionPropertiesMap(), body,
+    RestClient.RequestHeadersSpec.ExchangeFunction<T> { request, response -> exchangeLambda(request, response) })

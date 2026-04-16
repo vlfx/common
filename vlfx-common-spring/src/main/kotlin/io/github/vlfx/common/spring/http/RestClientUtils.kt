@@ -10,7 +10,6 @@ import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestClient
 import kotlin.apply
-import kotlin.apply as kotlinApply
 
 /**
  * restClient和http的一些工具集和扩展
@@ -114,15 +113,19 @@ object RestClientUtils {
      * 构建基于http代理的restClient
      */
     fun httpProxyRestClientBuild(
-        httpProxyConfig: HttpProxyConfig
+        httpProxyConfig: HttpProxyConfig,
+        builderChain: ((RestClient.Builder) -> RestClient.Builder) = { it }
     ): RestClient {
-        val restClient = RestClient.builder().kotlinApply {
-            requestFactory(HttpComponentsClientHttpRequestFactory(
+        val restClient = RestClient.builder().requestFactory(
+            HttpComponentsClientHttpRequestFactory(
                 httpProxyClientBuild(
                     httpProxyConfig
                 )
-            ))
+            )
+        ).apply {
+            builderChain(it)
         }.build()
+
         return restClient
     }
 }
