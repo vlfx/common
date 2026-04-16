@@ -58,7 +58,7 @@ inline fun <reified T> RequestMetadata.sync(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
     body: Any? = null
-): T? = sync(T::class.java, restClient, params.reflectionPropertiesMap(), body)
+): T? = sync(T::class.java, restClient, params, body)
 
 inline fun <reified T> RequestMetadata.sync(
     restClient: RestClient,
