@@ -18,6 +18,8 @@ import kotlin.reflect.jvm.isAccessible
 
 
 /**
+ * 注意：目前只对kotlin的“data class”有用，java的class明确有问题，后面有空再修复 TODO
+ *
  * 将一个对象转换为另一个类的对象，如果是两个对象互相复制可以直接用spring的BeanUtils
  * 这里不用spring的BeanUtils是因为kotlin的特殊性，比如data class如果其中有一个不可为空且无默认值的属性比如"var name: String"，这个时候是没有无参构造方法的，我试过BeanUtils.copyProperties必须得用实例化对象，了解了一下MapStruct好像生成的代码也是先用无参构造方法实例化一个对象然后给属性set值，这种情况应该怎么办？
  * 注：后面可以考虑模仿spring增加缓存，暂时不考虑性能问题而增加不必要的工作量
@@ -46,6 +48,8 @@ inline fun <reified T : Any> Any.copyTo(nullable: Boolean = true): T {
 }
 
 /**
+ * 注意：目前只对kotlin的“data class”有用，java的class明确有问题，后面有空再修复 TODO
+ *
  * 同上
  *
  * @param T 目标类

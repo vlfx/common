@@ -6,8 +6,8 @@ import io.github.vlfx.common.reflectionPropertiesMap
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpRequest
+import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestClient
-import org.springframework.web.client.body
 
 /**
  * http请求元数据，简化基础性的http请求
@@ -58,17 +58,7 @@ inline fun <reified T> RequestMetadata.sync(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
     body: Any? = null
-): T? {
-    val bodyContent = body ?: this.body
-    return restClient
-        .method(method) // method
-        .uri(uri, this.params + params) // uri & params
-        .headers(headersConsumer).apply { // headers
-            if (bodyContent != null) {
-                body(bodyContent) // body
-            }
-        }.retrieve().body()
-}
+): T? = sync(T::class.java, restClient, params.reflectionPropertiesMap(), body)
 
 inline fun <reified T> RequestMetadata.sync(
     restClient: RestClient,
@@ -107,6 +97,37 @@ inline fun <reified T, R> RequestMetadata.sync(
     body: Any? = null,
     resultTransform: ResultTransform<T, R>
 ): R = sync(restClient, params.reflectionPropertiesMap(), body, resultTransform)
+
+/******* toEntity *******/
+
+fun <T> RequestMetadata.toEntity(
+    resultBodyType: Class<T>,
+    restClient: RestClient,
+    params: Map<String, Any?> = emptyMap(),
+    body: Any? = null
+): ResponseEntity<T> {
+    val bodyContent = body ?: this.body
+    return restClient
+        .method(method)
+        .uri(uri, this.params + params)
+        .headers(headersConsumer).apply {
+            if (bodyContent != null) {
+                body(bodyContent)
+            }
+        }.retrieve().toEntity(resultBodyType)
+}
+
+inline fun <reified T> RequestMetadata.toEntity(
+    restClient: RestClient,
+    params: Map<String, Any?> = emptyMap(),
+    body: Any? = null
+): ResponseEntity<T> = toEntity(T::class.java, restClient, params, body)
+
+inline fun <reified T> RequestMetadata.toEntity(
+    restClient: RestClient,
+    params: Any,
+    body: Any? = null
+): ResponseEntity<T> = toEntity(restClient, params.reflectionPropertiesMap(), body)
 
 /******* exchange *******/
 
