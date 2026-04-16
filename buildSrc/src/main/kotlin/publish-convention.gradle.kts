@@ -37,6 +37,10 @@ mavenPublishing {
             developerConnection by "scm:git:ssh://git@github.com/vlfx/common.git"
         }
     }
-    publishToMavenCentral()
-    signAllPublications()
+
+    val signingKeyId = System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKeyId")
+    if (!signingKeyId.isNullOrEmpty()) {
+        publishToMavenCentral()
+        signAllPublications()
+    }
 }
