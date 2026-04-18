@@ -25,9 +25,9 @@ open class CrawlerEggs<in PARAMS : Any, RESPONSE>(
         return this
     }
 
-    fun setupResultTransform(resultTransformFun: ((String?) -> RESPONSE)): CrawlerEggs<PARAMS, RESPONSE> {
+    fun setupResultTransform(resultTransformFun: ((String?) -> RESPONSE?)): CrawlerEggs<PARAMS, RESPONSE> {
         this.resultTransform = object : ResultTransform<String, RESPONSE> {
-            override fun transform(result: String?): RESPONSE {
+            override fun transform(result: String?): RESPONSE? {
                 return resultTransformFun.invoke(result)
             }
         }
