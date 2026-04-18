@@ -30,7 +30,7 @@ open class ResultTransformRequester<T, R>(
 //    }
 
     // plan 3
-    fun sync(params: Map<String, Any?> = emptyMap(), body: Any? = null): R {
+    fun sync(params: Map<String, Any?> = emptyMap(), body: Any? = null): R? {
         @Suppress("UNCHECKED_CAST") val resultBodyClass: Class<T> =
             resultTransform.javaClass.kotlin.supertypes[0].arguments[0].type!!.javaType as Class<T>
 
@@ -38,7 +38,7 @@ open class ResultTransformRequester<T, R>(
         return resultTransform.transform(resultBody)
     }
 
-    fun sync(params: Any, body: Any? = null): R = sync(params.reflectionPropertiesMap(), body)
+    fun sync(params: Any, body: Any? = null): R? = sync(params.reflectionPropertiesMap(), body)
 
 
 }

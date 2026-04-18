@@ -70,8 +70,8 @@ inline fun <reified T, R> RequestMetadata.sync(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
     body: Any? = null,
-    resultTransform: (T?) -> R
-): R {
+    resultTransform: (T?) -> R?
+): R? {
     return resultTransform(sync(restClient, params, body))
 }
 
@@ -79,15 +79,15 @@ inline fun <reified T, R> RequestMetadata.sync(
     restClient: RestClient,
     params: Any,
     body: Any? = null,
-    resultTransform: (T?) -> R
-): R = sync(restClient, params.reflectionPropertiesMap(), body, resultTransform)
+    resultTransform: (T?) -> R?
+): R? = sync(restClient, params.reflectionPropertiesMap(), body, resultTransform)
 
 inline fun <reified T, R> RequestMetadata.sync(
     restClient: RestClient,
     params: Map<String, Any?> = emptyMap(),
     body: Any? = null,
     resultTransform: ResultTransform<T, R>
-): R {
+): R? {
     return resultTransform.transform(sync(restClient, params, body))
 }
 
@@ -96,7 +96,7 @@ inline fun <reified T, R> RequestMetadata.sync(
     params: Any,
     body: Any? = null,
     resultTransform: ResultTransform<T, R>
-): R = sync(restClient, params.reflectionPropertiesMap(), body, resultTransform)
+): R? = sync(restClient, params.reflectionPropertiesMap(), body, resultTransform)
 
 /******* toEntity *******/
 
