@@ -35,6 +35,10 @@ open class CrawlerEggs<in PARAMS : Any, RESPONSE>(
     }
 
     fun sync(params: Map<String, Any?> = emptyMap(), body: Any? = null): RESPONSE? {
+        if (params.isEmpty() && requestMetadata.uri.contains("{") && requestMetadata.uri.contains("}")) {
+            // 如果uri中包含{}插值模版，则params不能为空。(暂时这么处理，还没想出更好的方法)
+            throw IllegalArgumentException("Params must not be empty")
+        }
         return if (resultTransform == null) {
             requestMetadata.sync(responseClass, restClient, params, body)
         } else {
