@@ -9,6 +9,10 @@ import kotlin.reflect.jvm.javaType
  * @author vLfx
  * @date 2026/1/22 12:31
  */
+@Deprecated(
+    message = "这个类没啥意义，实在需要可以使用CrawlerEggs，或者作为参考",
+    replaceWith = ReplaceWith("CrawlerEggs<PARAMS, RESPONSE>")
+)
 open class ResultTransformRequester<T, R>(
     private val requestMetadata: RequestMetadata,
     private val restClient: RestClient,
