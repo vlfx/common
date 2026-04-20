@@ -2,6 +2,8 @@
 
 package io.github.vlfx.common.spring.http.crawler
 
+import io.github.vlfx.common.reflectionPropertiesMap
+import io.github.vlfx.common.spring.JacksonUtils
 import io.github.vlfx.common.spring.http.RequestMetadata
 import io.github.vlfx.common.spring.http.ResultTransform
 import io.github.vlfx.common.spring.http.sync
@@ -52,5 +54,30 @@ open class CrawlerEggs<in PARAMS : Any, RESPONSE>(
         } else {
             resultTransform?.transform(requestMetadata.sync(restClient, params, body))
         }
+    }
+
+    /**
+     * 请求时观察响应字符串
+     * 此时请求的decode并没有交给restClient，手动 json to bean 使用的 JacksonUtils.fromJsonString
+     */
+    fun requestAndObserveResponseString(
+        params: Map<String, Any?> = emptyMap(),
+        body: Any? = null,
+        observer: (String?) -> Unit
+    ): RESPONSE? {
+        val result: String? = requestMetadata.sync(restClient, params, body)
+        observer(result)
+        if (result == null) {
+            return null
+        }
+        return if (resultTransform == null) {
+            JacksonUtils.fromJsonString(result, responseClass)
+        } else {
+            resultTransform?.transform(result)
+        }
+    }
+
+    fun requestAndObserveResponseString(params: PARAMS, body: Any? = null, observer: (String?) -> Unit): RESPONSE? {
+        return requestAndObserveResponseString(params.reflectionPropertiesMap(), body, observer)
     }
 }

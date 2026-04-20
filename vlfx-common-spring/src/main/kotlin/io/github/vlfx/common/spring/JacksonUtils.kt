@@ -1,4 +1,5 @@
 @file:Suppress("unused")
+
 package io.github.vlfx.common.spring
 
 import com.fasterxml.jackson.annotation.JsonInclude
@@ -82,6 +83,10 @@ object JacksonUtils {
      */
     inline fun <reified T> fromJsonString(json: String): T {
         return JSON.readValue(json, T::class.java)
+    }
+
+    fun <T> fromJsonString(json: String, clazz: Class<T>): T {
+        return JSON.readValue(json, clazz)
     }
 
     /**
