@@ -1,5 +1,6 @@
 package io.github.vlfx.common.spring.http.crawler
 
+import io.github.vlfx.common.spring.JacksonUtils
 import io.github.vlfx.common.spring.http.RequestMetadata
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -78,8 +79,23 @@ class CrawlerEggsBuilder<in PARAMS : Any, RESPONSE> {
         this.responseClass = value
     }
 
-    fun resultTransform(block: (String?) -> RESPONSE?) {
-        this.resultTransform = block
+    @CrawlerEggsMarker
+    class ResultTransformContext(val result: String?) {
+        @CrawlerEggsMarker
+        inline fun <reified T> jsonDecode(): T? {
+            return if (result == null) null else JacksonUtils.fromJsonString(result)
+        }
+
+        @CrawlerEggsMarker
+        inline fun <reified T> customDecode(block: (String?) -> T?): T? {
+            return block(result)
+        }
+    }
+
+    fun resultTransform(block: ResultTransformContext.() -> RESPONSE?) {
+        this.resultTransform = { result ->
+            ResultTransformContext(result).block()
+        }
     }
 
     fun build(): CrawlerEggs<PARAMS, RESPONSE> {
