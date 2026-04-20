@@ -20,7 +20,7 @@ import io.github.vlfx.common.annotation.CustomExtend
  * @return 匹配到的值
  */
 @CustomExtend
-fun String.findMatch(regexStr: String, group: Int = 0, startIndex: Int = 0, default: String? = null):String? {
+fun String.findMatch(regexStr: String, group: Int = 0, startIndex: Int = 0, default: String? = null): String? {
     val regex = Regex(regexStr)
     val matchResult = regex.find(this, startIndex)
     if (matchResult != null) {
@@ -36,4 +36,13 @@ fun String.findMatch(regexStr: String, group: Int = 0, startIndex: Int = 0, defa
     } else {
         return default
     }
+}
+
+/**
+ * 字符串匹配正则表达式取回第group分组的所有值，其他说明同 String.findMatch
+ */
+fun String.findMatches(regexStr: String, group: Int = 0, startIndex: Int = 0): List<String> {
+    val regex = Regex(regexStr)
+    val matchResult = regex.findAll(this, startIndex)
+    return matchResult.mapNotNull { it.groups[group]?.value }.toList()
 }
