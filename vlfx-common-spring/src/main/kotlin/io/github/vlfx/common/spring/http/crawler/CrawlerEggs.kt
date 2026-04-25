@@ -36,23 +36,27 @@ open class CrawlerEggs<in PARAMS : Any, RESPONSE>(
         return this
     }
 
-    fun sync(params: Map<String, Any?> = emptyMap(), body: Any? = null): RESPONSE? {
+    fun sync(
+        params: Map<String, Any?> = emptyMap(),
+        body: Any? = null,
+        headers: Map<String, String> = emptyMap()
+    ): RESPONSE? {
         if (params.isEmpty() && requestMetadata.uri.contains("{") && requestMetadata.uri.contains("}")) {
             // 如果uri中包含{}插值模版，则params不能为空。(暂时这么处理，还没想出更好的方法)
             throw IllegalArgumentException("Params must not be empty")
         }
         return if (resultTransform == null) {
-            requestMetadata.sync(responseClass, restClient, params, body)
+            requestMetadata.sync(responseClass, restClient, params, body, headers)
         } else {
-            resultTransform?.transform(requestMetadata.sync(restClient, params, body))
+            resultTransform?.transform(requestMetadata.sync(restClient, params, body, headers))
         }
     }
 
-    fun sync(params: PARAMS, body: Any? = null): RESPONSE? {
+    fun sync(params: PARAMS, body: Any? = null, headers: Map<String, String> = emptyMap()): RESPONSE? {
         return if (resultTransform == null) {
-            requestMetadata.sync(responseClass, restClient, params, body)
+            requestMetadata.sync(responseClass, restClient, params, body, headers)
         } else {
-            resultTransform?.transform(requestMetadata.sync(restClient, params, body))
+            resultTransform?.transform(requestMetadata.sync(restClient, params, body, headers))
         }
     }
 
@@ -63,9 +67,10 @@ open class CrawlerEggs<in PARAMS : Any, RESPONSE>(
     fun requestAndObserveResponseString(
         params: Map<String, Any?> = emptyMap(),
         body: Any? = null,
+        headers: Map<String, String> = emptyMap(),
         observer: (String?) -> Unit
     ): RESPONSE? {
-        val result: String? = requestMetadata.sync(restClient, params, body)
+        val result: String? = requestMetadata.sync(restClient, params, body, headers)
         observer(result)
         if (result == null) {
             return null
@@ -77,7 +82,12 @@ open class CrawlerEggs<in PARAMS : Any, RESPONSE>(
         }
     }
 
-    fun requestAndObserveResponseString(params: PARAMS, body: Any? = null, observer: (String?) -> Unit): RESPONSE? {
-        return requestAndObserveResponseString(params.reflectionPropertiesMap(), body, observer)
+    fun requestAndObserveResponseString(
+        params: PARAMS,
+        body: Any? = null,
+        headers: Map<String, String> = emptyMap(),
+        observer: (String?) -> Unit
+    ): RESPONSE? {
+        return requestAndObserveResponseString(params.reflectionPropertiesMap(), body, headers, observer)
     }
 }
