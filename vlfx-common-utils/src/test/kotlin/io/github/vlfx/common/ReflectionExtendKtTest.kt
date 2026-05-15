@@ -20,12 +20,19 @@ class ReflectionExtendKtTest {
         val address: String? = null
     )
 
+//    data class TargetClass(
+//        val name: String,
+//        val age: Int,
+//        val email: String? = null,
+//        val phone: String? = null
+//    )
     data class TargetClass(
         val name: String,
-        val age: Int,
-        val email: String? = null,
-        val phone: String? = null
-    )
+    ){
+        var age: Int = 0
+        var email: String? = null
+        var phone: String? = null
+    }
 
     data class TargetClassWithVar(
         val name: String,

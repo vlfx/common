@@ -119,7 +119,11 @@ inline fun <reified T : Any> Any.copyTo(
 
     // 处理可变属性（var）：如果构造函数中没有对应的参数，尝试通过反射设置
     val targetProperties = targetClass.memberProperties.associateBy { it.name }
-    sourceProperties.forEach { (name, sourceProp) ->
+    
+    // 合并源属性和 replaceParams 中的属性
+    val allPropsToProcess = (sourceProperties.keys + replaceParams.keys).distinct()
+    
+    allPropsToProcess.forEach { name ->
         // 跳过在 ignoreParams 中的属性
         if (name in ignoreParams) return@forEach
         
@@ -127,7 +131,7 @@ inline fun <reified T : Any> Any.copyTo(
         val valueToSet = if (replaceParams.containsKey(name)) {
             replaceParams[name]
         } else {
-            sourceProp.getter.call(this)
+            sourceProperties[name]?.getter?.call(this)
         }
         
         // 检查是否需要设置值
