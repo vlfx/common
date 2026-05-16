@@ -6,6 +6,9 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
+import io.github.vlfx.common.ReflectionExtendTest.JavaSourceClass
+import io.github.vlfx.common.ReflectionExtendTest.JavaTargetClass
+
 /**
  * @author vLfx
  * @date 2026/5/15
@@ -47,6 +50,23 @@ class ReflectionExtendKtTest {
 
     // 一个没有合适构造函数的测试类
     class NoConstructorClass
+
+//    // Java 源类（需要在 Java 源码目录中定义）
+//    // 为了测试 Java 互操作性，我们使用 Kotlin 类模拟 Java 类的行为
+//    class JavaSourceClass(
+//        val name: String,
+//        val age: Int,
+//        val email: String? = null
+//    )
+//
+//    // Java 目标类
+//    class JavaTargetClass(
+//        val name: String,
+//        val age: Int
+//    ) {
+//        var phone: String? = null
+//        var email: String? = null
+//    }
 
     @Test
     fun testCopyToBasic() {
@@ -216,5 +236,66 @@ class ReflectionExtendKtTest {
         assertEquals(40, target.age)
         assertNull(target.email)
         assertNull(target.phone)
+    }
+
+    // ========== Java 互操作性测试 ==========
+
+    @Test
+    fun testKotlinToJava() {
+        val source = SourceClass("Kotlin源", 50, "kotlin@example.com", "北京")
+        val target = source.copyTo<JavaTargetClass>()
+
+        assertEquals("Kotlin源", target.name)
+        assertEquals(50, target.age)
+        assertEquals("kotlin@example.com", target.email)
+        assertNull(target.phone)
+    }
+
+    @Test
+    fun testJavaToKotlin() {
+        val source = JavaSourceClass("Java源", 55, "java@example.com")
+        val target = source.copyTo<TargetClass>()
+
+        assertEquals("Java源", target.name)
+        assertEquals(55, target.age)
+        assertEquals("java@example.com", target.email)
+        assertNull(target.phone)
+    }
+
+    @Test
+    fun testJavaToJava() {
+        val source = JavaSourceClass("Java源", 60, "java@example.com")
+        val target = source.copyTo<JavaTargetClass>()
+
+        assertEquals("Java源", target.name)
+        assertEquals(60, target.age)
+        assertEquals("java@example.com", target.email)
+        assertNull(target.phone)
+    }
+
+    @Test
+    fun testKotlinToJavaWithReplaceParams() {
+        val source = SourceClass("Kotlin源", 65, "kotlin@example.com", "上海")
+        val target = source.copyTo<JavaTargetClass>(
+            replaceParams = mapOf("phone" to "13800138000")
+        )
+
+        assertEquals("Kotlin源", target.name)
+        assertEquals(65, target.age)
+        assertEquals("kotlin@example.com", target.email)
+        assertEquals("13800138000", target.phone)
+    }
+
+    @Test
+    fun testJavaToKotlinWithReplaceParams() {
+        val source = JavaSourceClass("Java源", 70, "java@example.com")
+        val target = source.copyTo<TargetClass>(
+            replaceParams = mapOf("phone" to "13900139000")
+        )
+
+        assertEquals("Java源", target.name)
+        assertEquals(70, target.age)
+        assertEquals("java@example.com", target.email)
+        assertEquals("13900139000", target.phone)
     }
 }

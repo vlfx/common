@@ -29,51 +29,52 @@ import kotlin.reflect.jvm.isAccessible
  */
 @CustomExtend
 inline fun <reified T : Any> Any.copyTo(nullable: Boolean = true): T {
-    val targetClass: KClass<T> = T::class
-    val sourceProperties = this::class.memberProperties.associateBy { it.name }
-    
-    // 获取主构造函数
-    val constructor = targetClass.constructors.firstOrNull()
-        ?: throw IllegalArgumentException("目标类 ${targetClass.simpleName} 没有可用的构造函数")
-
-    // 构建构造函数参数映射
-    val constructorArgs = mutableMapOf<KParameter, Any?>()
-    constructor.parameters.forEach { param ->
-        val sourceValue = sourceProperties[param.name]?.getter?.call(this)
-        if (nullable || sourceValue != null) {
-            constructorArgs[param] = sourceValue
-        }
-    }
-
-    // 通过构造函数创建实例
-    val targetInstance = constructor.callBy(constructorArgs)
-
-    // 处理可变属性（var）：如果构造函数中没有对应的参数，尝试通过反射设置
-    val targetProperties = targetClass.memberProperties.associateBy { it.name }
-    sourceProperties.forEach { (name, sourceProp) ->
-        // 如果属性不在构造函数参数中，或者是可变属性，尝试设置值
-        val paramInConstructor = constructor.parameters.any { it.name == name }
-        val targetProp = targetProperties[name]
-        
-        if (!paramInConstructor && targetProp != null) {
-            val sourceValue = sourceProp.getter.call(this)
-            if (nullable || sourceValue != null) {
-                try {
-                    // 尝试设置为可变属性
-                    val mutableProp = targetProp as? kotlin.reflect.KMutableProperty1<T, *>
-                    mutableProp?.let {
-                        it.isAccessible = true
-                        @Suppress("UNCHECKED_CAST")
-                        (it as kotlin.reflect.KMutableProperty1<T, Any?>).set(targetInstance, sourceValue)
-                    }
-                } catch (e: Exception) {
-                    // 忽略设置失败的情况（可能是不可变属性或类型不兼容）
-                }
-            }
-        }
-    }
-
-    return targetInstance
+    return this.copyTo(emptyMap(), emptyList(), nullable)
+//    val targetClass: KClass<T> = T::class
+//    val sourceProperties = this::class.memberProperties.associateBy { it.name }
+//
+//    // 获取主构造函数
+//    val constructor = targetClass.constructors.firstOrNull()
+//        ?: throw IllegalArgumentException("目标类 ${targetClass.simpleName} 没有可用的构造函数")
+//
+//    // 构建构造函数参数映射
+//    val constructorArgs = mutableMapOf<KParameter, Any?>()
+//    constructor.parameters.forEach { param ->
+//        val sourceValue = sourceProperties[param.name]?.getter?.call(this)
+//        if (nullable || sourceValue != null) {
+//            constructorArgs[param] = sourceValue
+//        }
+//    }
+//
+//    // 通过构造函数创建实例
+//    val targetInstance = constructor.callBy(constructorArgs)
+//
+//    // 处理可变属性（var）：如果构造函数中没有对应的参数，尝试通过反射设置
+//    val targetProperties = targetClass.memberProperties.associateBy { it.name }
+//    sourceProperties.forEach { (name, sourceProp) ->
+//        // 如果属性不在构造函数参数中，或者是可变属性，尝试设置值
+//        val paramInConstructor = constructor.parameters.any { it.name == name }
+//        val targetProp = targetProperties[name]
+//
+//        if (!paramInConstructor && targetProp != null) {
+//            val sourceValue = sourceProp.getter.call(this)
+//            if (nullable || sourceValue != null) {
+//                try {
+//                    // 尝试设置为可变属性
+//                    val mutableProp = targetProp as? kotlin.reflect.KMutableProperty1<T, *>
+//                    mutableProp?.let {
+//                        it.isAccessible = true
+//                        @Suppress("UNCHECKED_CAST")
+//                        (it as kotlin.reflect.KMutableProperty1<T, Any?>).set(targetInstance, sourceValue)
+//                    }
+//                } catch (e: Exception) {
+//                    // 忽略设置失败的情况（可能是不可变属性或类型不兼容）
+//                }
+//            }
+//        }
+//    }
+//
+//    return targetInstance
 }
 
 /**
@@ -95,7 +96,7 @@ inline fun <reified T : Any> Any.copyTo(
     val sourceProperties = this::class.memberProperties
         .associateBy { it.name }
         .filter { it.key !in ignoreParams }
-    
+
     // 获取主构造函数
     val constructor = targetClass.constructors.firstOrNull()
         ?: throw IllegalArgumentException("目标类 ${targetClass.simpleName} 没有可用的构造函数")
@@ -119,30 +120,30 @@ inline fun <reified T : Any> Any.copyTo(
 
     // 处理可变属性（var）：如果构造函数中没有对应的参数，尝试通过反射设置
     val targetProperties = targetClass.memberProperties.associateBy { it.name }
-    
+
     // 合并源属性和 replaceParams 中的属性
     val allPropsToProcess = (sourceProperties.keys + replaceParams.keys).distinct()
-    
+
     allPropsToProcess.forEach { name ->
         // 跳过在 ignoreParams 中的属性
         if (name in ignoreParams) return@forEach
-        
+
         // 如果属性在 replaceParams 中，使用 replaceParams 的值
         val valueToSet = if (replaceParams.containsKey(name)) {
             replaceParams[name]
         } else {
             sourceProperties[name]?.getter?.call(this)
         }
-        
+
         // 检查是否需要设置值
         if (!nullable && valueToSet == null && !replaceParams.containsKey(name)) {
             return@forEach
         }
-        
+
         // 如果属性不在构造函数参数中，或者是可变属性，尝试设置值
         val paramInConstructor = constructor.parameters.any { it.name == name }
         val targetProp = targetProperties[name]
-        
+
         if (!paramInConstructor && targetProp != null) {
             try {
                 // 尝试设置为可变属性
